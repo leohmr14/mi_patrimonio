@@ -61,7 +61,32 @@ table{min-width:460px}.inventory{margin-top:25px;padding-top:24px;border-top:1px
 <section id="ledgerView" hidden style="--ledger-accent:#ff4d63"><div class="ledgerHero"><div><div class="ledgerHeroLabel"><span id="ledgerTitle">Gastos</span><button type="button" id="ledgerEye" aria-label="Ocultar montos" aria-pressed="false"></button></div><div id="ledgerTotal">S/ 0.00</div></div><svg id="ledgerHeroArrow" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4H4v5m35-5h5v5M4 39v5h5m35-5v5h-5M24 30V6m-9 9 9-9 9 9M9 29v10h30V29M13 21h5m12 0h5M13 25h3m16 0h3M16 35h16"/><circle cx="24" cy="30" r="2"/></svg></div><div class="ledgerActions"><button class="primary" id="ledgerAdd">+ Registrar gasto</button></div>
 <section class="ledgerRegister" id="ledgerRegister" hidden><div class="sectionhead"><h2 id="ledgerFormTitle">Registrar gasto</h2><button type="button" id="ledgerClose">✕ Cerrar</button></div><form id="ledgerForm"><div class="ledgerFormGrid"><label>Monto (S/)<input id="ledgerAmount" type="number" min="0.01" max="1000000000" step="0.01" placeholder="0.00" required></label><label><span id="ledgerFormMethodLabel">Medio de pago</span><select id="ledgerMethod"></select></label></div><fieldset><legend id="ledgerFormGroupLabel">Categoría</legend><div class="ledgerPills" id="ledgerGroups"></div><input id="ledgerOther" placeholder="Especifica la categoría" maxlength="100" hidden></fieldset><div class="ledgerFormGrid"><label>Día<select id="ledgerDay"></select></label><label>Mes<select id="ledgerMonth"></select></label></div><label>Año<input id="ledgerYear" type="number" min="2000" max="2200" required></label><label>Comentario <span class="small">(opcional)</span><input id="ledgerComment" maxlength="300" placeholder="Ej.: almuerzo, bus, apoyo…"></label><p id="ledgerFormError" class="ledgerError" role="status"></p><div class="actions" style="margin-top:22px"><button type="button" id="ledgerCancel">Cancelar</button><button type="submit" class="primary" id="ledgerSubmit">Guardar gasto</button></div></form></section>
 <section class="box ledgerTableBox"><div class="sectionhead"><h2 id="ledgerTableTitle">Registro de gastos</h2><div class="actions"><select id="ledgerYearFilter" aria-label="Filtrar por año"></select><button type="button" id="ledgerExport">Descargar Excel</button><button type="button" id="ledgerClearFilters">Limpiar filtros</button></div></div><div class="tablewrap"><table class="ledgerTable"><thead id="ledgerHead"><tr><th><button type="button" data-ledger-col="day">Día<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12M4 7h8M6 11h4"/></svg></button></th><th><button type="button" data-ledger-col="month">Mes<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12M4 7h8M6 11h4"/></svg></button></th><th><button type="button" data-ledger-col="group"><span id="ledgerGroupHeader">Categoría</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12M4 7h8M6 11h4"/></svg></button></th><th><button type="button" data-ledger-col="comment">Comentario<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12M4 7h8M6 11h4"/></svg></button></th><th><button type="button" data-ledger-col="method"><span id="ledgerMethodHeader">Medio de pago</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12M4 7h8M6 11h4"/></svg></button></th><th><button type="button" data-ledger-col="amount">Monto<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12M4 7h8M6 11h4"/></svg></button></th><th>Acciones</th></tr></thead><tbody id="ledgerRows"></tbody></table></div></section><section class="box" id="receivablesPanel" hidden><div class="sectionhead"><h2>Por cobrar</h2><button class="primary" id="receivableAdd">+ Agregar cuenta por cobrar</button></div><div id="receivablesList"></div></section></section><section class="backupfooter" aria-label="Respaldo de datos"><div class="actions"><label class="filebtn">Importar respaldo<input id="import" type="file" accept=".json,application/json" hidden></label><button id="export">Descargar respaldo</button></div><p class="datanote">Al iniciar sesión y subir tus registros, se sincronizan con tu cuenta. Sin conexión, los cambios quedan pendientes en este dispositivo. Los respaldos descargables siguen disponibles.</p></section><footer>Todos los montos están en soles (PEN). Al pagar una deuda, actualiza también el dinero con el que la pagaste. Exportar crea una copia que contiene tus datos: consérvala fuera del repositorio público.</footer>
-</main><dialog id="receivableDialog"><form id="receivableForm"><h2 id="receivableTitle">Agregar cuenta por cobrar</h2><label>Persona<input id="receivablePerson" maxlength="160" required></label><label>Concepto<input id="receivableConcept" maxlength="300"></label><label>Monto pendiente (S/)<input id="receivableAmount" type="number" min="0.01" max="1000000000" step="0.01" required></label><p id="receivableError" class="ledgerError" role="alert"></p><div class="actions"><button type="button" id="receivableCancel">Cancelar</button><button class="primary" type="submit">Guardar</button></div></form></dialog><dialog id="collectDialog"><form id="collectForm"><h2>Registrar cobro</h2><p id="collectPerson"></p><label>Monto recibido (S/)<input id="collectAmount" type="number" min="0.01" step="0.01" required></label><label>Destino<select id="collectMethod"><option>BCP - Débito</option><option>BBVA - Débito</option><option>Efectivo</option></select></label><p id="collectError" class="ledgerError" role="alert"></p><div class="actions"><button type="button" id="collectCancel">Cancelar</button><button class="primary" type="submit">Confirmar cobro</button></div></form></dialog><dialog id="ledgerFilterModal"><form id="ledgerFilterForm"><h2 id="ledgerFilterTitle">Filtrar</h2><div id="ledgerFilterFields"></div><label>Orden<select id="ledgerFilterOrder"><option value="none">Sin ordenar</option><option value="asc">Ascendente</option><option value="desc">Descendente</option></select></label><div class="actions"><button type="button" id="ledgerFilterCancel">Cancelar</button><button type="button" id="ledgerFilterRemove">Quitar filtro</button><button type="submit" class="primary">Aplicar</button></div></form></dialog><dialog id="authModal"><form id="authForm"><h2>Tu cuenta Larrixx</h2><p class="small">Usa el mismo correo y contraseña en todos tus dispositivos. Esta cuenta es para tu web, no es la contraseña de la base de datos.</p><label>Correo electrónico<input id="authEmail" type="email" autocomplete="email" required></label><label>Contraseña<input id="authPassword" type="password" minlength="8" autocomplete="current-password" required></label><p id="authMessage" class="small" role="status"></p><div class="actions"><button type="button" id="authCancel">Cancelar</button><button type="submit" value="signup" id="authSignup">Crear cuenta</button><button type="submit" value="login" id="authSubmit" class="primary">Entrar</button></div></form></dialog><dialog id="creditModal"><form id="creditForm"><h2>Configurar BBVA Crédito</h2><label>Línea total (S/)<input id="creditTotal" type="number" min="0" step="0.01" required></label><label>Línea utilizada (S/)<input id="creditUsed" type="number" min="0" step="0.01" required></label><p id="creditResult" class="small" role="status"></p><div class="actions"><button type="button" id="creditCancel">Cancelar</button><button type="submit" class="primary">Guardar línea</button></div></form></dialog><dialog id="inlineModal"><form id="inlineForm"><h2 id="inlineTitle"></h2><div id="inlineFields"></div><div class="actions"><button type="button" id="inlineCancel">Cancelar</button><button type="submit" class="primary" id="inlineSubmit">Guardar</button></div><p id="inlineResult" class="small" role="status"></p></form></dialog><dialog id="editor"><form id="form"><h2 id="formtitle">Agregar registro</h2><label>Nombre<input id="name" required maxlength="160"></label><label>Tipo<select id="kind"><option value="asset">Activo</option><option value="debt">Deuda</option></select></label><label>Categoría<select id="category"></select></label><label>Valor total del registro (S/)<input id="amount" type="number" min="0" max="1000000000" step="0.01" required></label><label>Estado / adquisición<input id="notes" maxlength="400" placeholder="Ej.: 8/10 · abril de 2025"></label><div class="actions"><button type="button" id="cancel">Cancelar</button><button class="primary" type="submit">Guardar</button></div></form></dialog>
+</main><dialog id="receivableDialog"><form id="receivableForm"><h2 id="receivableTitle">Agregar cuenta por cobrar</h2><label>Persona<input id="receivablePerson" maxlength="160" required></label><label>Concepto<input id="receivableConcept" maxlength="300"></label><label>Monto pendiente (S/)<input id="receivableAmount" type="number" min="0.01" max="1000000000" step="0.01" required></label><p id="receivableError" class="ledgerError" role="alert"></p><div class="actions"><button type="button" id="receivableCancel">Cancelar</button><button class="primary" type="submit">Guardar</button></div></form></dialog><dialog id="collectDialog"><form id="collectForm"><h2>Registrar cobro</h2><p id="collectPerson"></p><label>Monto recibido (S/)<input id="collectAmount" type="number" min="0.01" step="0.01" required></label><label>Destino<select id="collectMethod"><option>BCP - Débito</option><option>BBVA - Débito</option><option>Efectivo</option></select></label><p id="collectError" class="ledgerError" role="alert"></p><div class="actions"><button type="button" id="collectCancel">Cancelar</button><button class="primary" type="submit">Confirmar cobro</button></div></form></dialog><dialog id="ledgerFilterModal"><form id="ledgerFilterForm"><h2 id="ledgerFilterTitle">Filtrar</h2><div id="ledgerFilterFields"></div><label>Orden<select id="ledgerFilterOrder"><option value="none">Sin ordenar</option><option value="asc">Ascendente</option><option value="desc">Descendente</option></select></label><div class="actions"><button type="button" id="ledgerFilterCancel">Cancelar</button><button type="button" id="ledgerFilterRemove">Quitar filtro</button><button type="submit" class="primary">Aplicar</button></div></form></dialog><dialog id="recoveryRequest">
+  <form id="recoveryRequestForm">
+    <h2>Recupera tu contraseña</h2>
+    <p class="small">Escribe el correo con el que creaste tu cuenta.</p>
+    <label>Correo electrónico<input id="recoveryEmail" type="email" autocomplete="email" required></label>
+    <p id="recoveryRequestStatus" class="small" role="status"></p>
+    <div class="actions">
+      <button id="recoveryBack" type="button">Volver</button>
+      <button id="recoverySend" type="submit" class="primary">Enviar enlace</button>
+    </div>
+  </form>
+</dialog>
+<dialog id="newPasswordDialog">
+  <form id="newPasswordForm">
+    <h2>Elige una contraseña nueva</h2>
+    <p class="small">Usa al menos 8 caracteres.</p>
+    <label>Contraseña nueva<input id="newPassword" type="password" minlength="8" autocomplete="new-password" required></label>
+    <label>Confirma la contraseña<input id="newPasswordConfirm" type="password" minlength="8" autocomplete="new-password" required></label>
+    <p id="newPasswordStatus" class="small" role="status"></p>
+    <div class="actions">
+      <button id="newPasswordCancel" type="button">Cancelar</button>
+      <button id="newPasswordSave" type="submit" class="primary">Guardar contraseña</button>
+    </div>
+  </form>
+</dialog>
+<dialog id="authModal"><form id="authForm"><h2>Tu cuenta Larrixx</h2><p class="small">Usa el mismo correo y contraseña en todos tus dispositivos. Esta cuenta es para tu web, no es la contraseña de la base de datos.</p><label>Correo electrónico<input id="authEmail" type="email" autocomplete="email" required></label><label>Contraseña<input id="authPassword" type="password" minlength="8" autocomplete="current-password" required></label><button type="button" id="authForgot">¿Olvidaste tu contraseña?</button><p id="authMessage" class="small" role="status"></p><div class="actions"><button type="button" id="authCancel">Cancelar</button><button type="submit" value="signup" id="authSignup">Crear cuenta</button><button type="submit" value="login" id="authSubmit" class="primary">Entrar</button></div></form></dialog><dialog id="creditModal"><form id="creditForm"><h2>Configurar BBVA Crédito</h2><label>Línea total (S/)<input id="creditTotal" type="number" min="0" step="0.01" required></label><label>Línea utilizada (S/)<input id="creditUsed" type="number" min="0" step="0.01" required></label><p id="creditResult" class="small" role="status"></p><div class="actions"><button type="button" id="creditCancel">Cancelar</button><button type="submit" class="primary">Guardar línea</button></div></form></dialog><dialog id="inlineModal"><form id="inlineForm"><h2 id="inlineTitle"></h2><div id="inlineFields"></div><div class="actions"><button type="button" id="inlineCancel">Cancelar</button><button type="submit" class="primary" id="inlineSubmit">Guardar</button></div><p id="inlineResult" class="small" role="status"></p></form></dialog><dialog id="editor"><form id="form"><h2 id="formtitle">Agregar registro</h2><label>Nombre<input id="name" required maxlength="160"></label><label>Tipo<select id="kind"><option value="asset">Activo</option><option value="debt">Deuda</option></select></label><label>Categoría<select id="category"></select></label><label>Valor total del registro (S/)<input id="amount" type="number" min="0" max="1000000000" step="0.01" required></label><label>Estado / adquisición<input id="notes" maxlength="400" placeholder="Ej.: 8/10 · abril de 2025"></label><div class="actions"><button type="button" id="cancel">Cancelar</button><button class="primary" type="submit">Guardar</button></div></form></dialog>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
 'use strict';
@@ -164,8 +189,153 @@ $('cloudLogout').onclick=async()=>{if(cloud.busy||cloud.loading){cloudMessage('E
 async function resolveCloud(useLocal){if(!cloud.user||cloud.busy)return;if(!confirm(useLocal?'¿Reemplazar la versión de la nube por tus cambios de este dispositivo?':'¿Cargar la nube y descartar los cambios pendientes de este dispositivo? Descarga un respaldo primero si quieres conservarlos.'))return;const epoch=cloud.epoch;cloud.busy=true;try{const row=await getCloudRow(cloud.user.id);if(cloud.epoch!==epoch)return;if(!row)throw Error('No se encontró la versión en la nube.');cloud.revision=row.revision;cloud.conflict=false;cloud.ready=true;if(useLocal){cloud.dirty++}else{state=valid(row.data);cloud.synced=cloud.dirty;cacheCloud();refreshAll();cloudMessage('Versión de la nube cargada ✓')}paintCloud()}catch(err){cloudMessage(humanCloudError(err))}finally{if(cloud.epoch===epoch){cloud.busy=false;if(useLocal&&!cloud.conflict)flushCloud()}}}
 $('cloudUseRemote').onclick=()=>resolveCloud(false);$('cloudUseLocal').onclick=()=>resolveCloud(true);
 window.addEventListener('online',pollCloud);window.addEventListener('focus',pollCloud);document.addEventListener('visibilitychange',()=>{if(!document.hidden)pollCloud()});setInterval(()=>{if(!document.hidden)pollCloud()},20000);window.addEventListener('beforeunload',e=>{if(cloud.user&&cloud.dirty>cloud.synced){e.preventDefault();e.returnValue=''}});
-async function initCloud(){paintCloud();if(!window.supabase){cloudMessage('Conexión no disponible. Tus registros locales siguen funcionando.');return}cloud.client=window.supabase.createClient(CLOUD_URL,CLOUD_PUBLIC_KEY);cloud.client.auth.onAuthStateChange((event,session)=>{setTimeout(()=>{connectCloud(session).catch(err=>cloudMessage(humanCloudError(err)))},0)});const {data,error}=await cloud.client.auth.getSession();if(error){cloudMessage(humanCloudError(error));return}await connectCloud(data.session)}
-initCloud().catch(err=>cloudMessage('No se pudo conectar: '+humanCloudError(err)));
+const accountPage = 'https://leohmr14.github.io/mi_patrimonio/';
+const authFragment = new URLSearchParams(location.hash.slice(1));
+const recoveryRedirect = authFragment.get('type') === 'recovery';
+const authQuery = new URLSearchParams(location.search);
+const expiredAuthLink = [authFragment, authQuery].some(params => params.get('error_code') === 'otp_expired');
+let recoveryUserId = null;
+
+function openRecoveryRequest() {
+  $('recoveryEmail').value = $('authEmail').value.trim();
+  $('recoveryRequestStatus').textContent = '';
+  $('authModal').close();
+  if (!$('recoveryRequest').open) $('recoveryRequest').showModal();
+}
+
+$('authForgot').onclick = openRecoveryRequest;
+$('recoveryBack').onclick = () => {
+  $('authEmail').value = $('recoveryEmail').value.trim();
+  $('recoveryRequest').close();
+  $('cloudLogin').onclick();
+};
+$('recoveryRequestForm').onsubmit = async event => {
+  event.preventDefault();
+  const status = $('recoveryRequestStatus');
+  const send = $('recoverySend');
+  if (send.disabled) return;
+  if (!cloud.client) {
+    status.textContent = 'Recarga la página con internet para pedir el enlace.';
+    return;
+  }
+  send.disabled = true;
+  status.textContent = 'Solicitando el enlace…';
+  try {
+    const email = $('recoveryEmail').value.trim();
+    const {error} = await cloud.client.auth.resetPasswordForEmail(email, {redirectTo: accountPage});
+    if (error) throw error;
+    status.textContent = 'Si hay una cuenta con ese correo, recibirás un enlace. Revisa también la carpeta de spam.';
+  } catch (error) {
+    status.textContent = 'No se pudo pedir el enlace: ' + humanCloudError(error) + '.';
+  } finally {
+    send.disabled = false;
+  }
+};
+
+function openNewPassword(session) {
+  if (!session?.user) return;
+  recoveryUserId = session.user.id;
+  $('authModal').close();
+  $('recoveryRequest').close();
+  $('newPasswordForm').reset();
+  $('newPasswordStatus').textContent = '';
+  if (!$('newPasswordDialog').open) $('newPasswordDialog').showModal();
+}
+
+function setPasswordFormBusy(busy) {
+  $('newPasswordSave').disabled = busy;
+  $('newPasswordCancel').disabled = busy;
+}
+
+async function cancelPasswordRecovery() {
+  if ($('newPasswordSave').disabled) return;
+  setPasswordFormBusy(true);
+  try {
+    const {error} = await cloud.client.auth.signOut({scope: 'local'});
+    if (error) throw error;
+    recoveryUserId = null;
+    $('newPasswordForm').reset();
+    $('newPasswordDialog').close();
+    await connectCloud(null);
+    cloudMessage('Si necesitas otro enlace, puedes pedirlo desde «¿Olvidaste tu contraseña?».');
+  } catch (error) {
+    $('newPasswordStatus').textContent = humanCloudError(error);
+  } finally {
+    setPasswordFormBusy(false);
+  }
+}
+$('newPasswordCancel').onclick = cancelPasswordRecovery;
+$('newPasswordDialog').oncancel = event => {
+  event.preventDefault();
+  void cancelPasswordRecovery();
+};
+
+$('newPasswordForm').onsubmit = async event => {
+  event.preventDefault();
+  const status = $('newPasswordStatus');
+  if ($('newPasswordSave').disabled) return;
+  const password = $('newPassword').value;
+  if (password.length < 8 || password !== $('newPasswordConfirm').value) {
+    status.textContent = 'Escribe al menos 8 caracteres y confirma la misma contraseña.';
+    return;
+  }
+  setPasswordFormBusy(true);
+  status.textContent = 'Guardando la contraseña…';
+  try {
+    const {data, error: sessionError} = await cloud.client.auth.getSession();
+    if (sessionError) throw sessionError;
+    if (!recoveryUserId || data.session?.user.id !== recoveryUserId) {
+      status.textContent = 'La sesión de recuperación cambió. Cancela y solicita otro enlace.';
+      return;
+    }
+    const {error} = await cloud.client.auth.updateUser({password});
+    if (error) throw error;
+    recoveryUserId = null;
+    $('newPasswordForm').reset();
+    $('newPasswordDialog').close();
+    await connectCloud(data.session);
+    if (cloud.ready && !cloud.conflict && cloud.dirty <= cloud.synced) {
+      cloudMessage('Contraseña actualizada ✓');
+    }
+  } catch (error) {
+    status.textContent = humanCloudError(error);
+  } finally {
+    setPasswordFormBusy(false);
+  }
+};
+
+async function initCloud() {
+  paintCloud();
+  if (!window.supabase) {
+    cloudMessage('Conexión no disponible. Tus registros locales siguen funcionando.');
+    return;
+  }
+  cloud.client = window.supabase.createClient(CLOUD_URL, CLOUD_PUBLIC_KEY);
+  cloud.client.auth.onAuthStateChange((event, session) => {
+    if (event === 'PASSWORD_RECOVERY') {
+      openNewPassword(session);
+      return;
+    }
+    if (recoveryUserId || (recoveryRedirect && event === 'INITIAL_SESSION')) return;
+    setTimeout(() => {
+      if (!recoveryUserId) connectCloud(session).catch(error => cloudMessage(humanCloudError(error)));
+    }, 0);
+  });
+  const {data, error} = await cloud.client.auth.getSession();
+  if (recoveryUserId) return;
+  if (expiredAuthLink || (recoveryRedirect && !data?.session)) {
+    openRecoveryRequest();
+    $('recoveryRequestStatus').textContent = 'El enlace venció o ya se usó. Solicita uno nuevo.';
+    return;
+  }
+  if (error) {
+    cloudMessage(humanCloudError(error));
+    return;
+  }
+  if (!recoveryRedirect) await connectCloud(data.session);
+}
+initCloud().catch(error => cloudMessage('No se pudo conectar: ' + humanCloudError(error)));
+
 
 
 // Income and spending are posted atomically with their cash/credit balance changes.
