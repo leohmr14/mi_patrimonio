@@ -55,6 +55,9 @@ table{min-width:460px}.inventory{margin-top:25px;padding-top:24px;border-top:1px
 .dueCard{background:#0d141e;border:1px solid #2b465d;border-radius:12px;padding:20px;margin-top:18px}.dueCardTop{display:flex;align-items:center;justify-content:space-between;gap:20px}.dueCard h3{font-size:17px;margin:0 0 8px}.dueCard p{font-size:13px;color:#9bb7d3;margin:0;overflow-wrap:anywhere}.dueAmount{text-align:right;flex-shrink:0}.dueAmount span{font-size:12px;color:#9bb7d3}.dueAmount strong{display:block;color:#39ff88;font-size:26px;margin-top:7px}.dueCard .actions{margin-top:20px}.dueCard button,#receivableAdd{font-size:13px;padding:9px 12px}.ledgerRowActions{display:flex;gap:7px;white-space:nowrap}.ledgerDelete{font-size:12px;padding:6px 10px;border-radius:7px;color:#ff8997}#receivablesPanel h2{margin:0}#receivablesPanel .sectionhead{margin-bottom:10px}@media(max-width:500px){.dueCardTop{align-items:flex-start;flex-direction:column}.dueAmount{text-align:left}}
 .creditPaymentOptions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:min(100%,390px);margin-top:8px}
 .creditPaymentOptions button{display:flex;align-items:center;justify-content:center;min-height:42px;margin:0;padding:6px 9px;font-size:12px;line-height:1.25;text-align:center}
+
+.moneycard .cashTransferAction{display:flex;align-items:center;justify-content:center;width:128px;height:38px;padding:0 10px;margin:18px auto 0;font-size:13px;line-height:1;border-radius:8px}
+#cashTransferDialog .actions{justify-content:flex-end}
 </style></head><body><aside class="sidebar"><a href="#inicio" class="brand">◈ Mi balance</a><p class="navcaption">PANEL FINANCIERO</p><nav aria-label="Secciones"><a href="#inicio" data-route="inicio">⌂ <span>Inicio</span></a><a href="#patrimonio" data-route="patrimonio">◇ <span>Patrimonio Neto</span></a><a href="#dinero" data-route="dinero">◉ <span>Dinero disponible</span></a><a href="#ingresos" data-route="ingresos">↗ <span>Ingresos</span></a><a href="#gastos" data-route="gastos">↘ <span>Gastos</span></a></nav><div class="sidefoot signature"><div>Larrixx</div><span class="version">versión 1.11</span></div></aside><main>
 <section class="cloudbar" aria-label="Cuenta y sincronización"><div><span id="cloudIdentity">Solo en este navegador</span><div id="cloudStatus" role="status" aria-live="polite">Conecta tu cuenta para sincronizar tus registros.</div></div><div class="actions"><button id="cloudLogin" class="primary">Iniciar sesión</button><button id="cloudFirstUpload" hidden>Subir mis registros</button><button id="cloudRefresh" hidden>Sincronizar</button><button id="cloudLogout" hidden>Cerrar sesión</button></div></section><div id="cloudConflict" class="cloudconflict" hidden><p>Hay cambios distintos en este dispositivo y en la nube. Puedes descargar un respaldo antes de elegir.</p><div class="actions"><button id="cloudUseRemote">Cargar versión de la nube</button><button id="cloudUseLocal">Conservar mis cambios locales</button></div></div><header><div><h1>Estado de Situación Financiera</h1><p>Una vista clara de lo que tienes y lo que debes.</p></div></header>
 <div id="status" class="status" role="status" aria-live="polite"></div>
@@ -96,7 +99,7 @@ table{min-width:460px}.inventory{margin-top:25px;padding-top:24px;border-top:1px
 const KEY='mi-patrimonio-v1', cats=["Dinero disponible","Tecnología","Ropa y accesorios","Deporte y herramientas","Libros y colecciones","Otros activos","Deudas","Dinero","Calzado","Mochilas y billeteras","Deporte y transporte","Colecciones","Productos para vender","Hogar","Por cobrar"];
 let state={version:1,items:[],history:[]}, editing=null, selectedCategory=null;
 const $=id=>document.getElementById(id), money=n=>new Intl.NumberFormat('es-PE',{style:'currency',currency:'PEN'}).format(n), cents=n=>Math.round(Number(n)*100), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function valid(data){if(!data||data.version!==1||!Array.isArray(data.items)||data.items.length>10000)throw Error('Formato de respaldo no válido.');const ids=new Set();let items=data.items.map(x=>{if(!x||typeof x.id!=='string'||ids.has(x.id)||typeof x.name!=='string'||!x.name.trim()||!cats.includes(x.category)||!['asset','debt'].includes(x.kind)||typeof x.amount!=='number'||!Number.isFinite(x.amount)||x.amount<0||x.amount>1e9)throw Error('Hay un registro no válido.');ids.add(x.id);return {id:x.id,name:x.name.slice(0,160),category:x.kind==='asset'&&x.name==='Dinero por cobrar'?'Por cobrar':x.category,kind:x.kind,amount:cents(x.amount)/100,notes:String(x.notes||'').slice(0,400),creditor:String(x.creditor||'').slice(0,160),concept:String(x.concept||'').slice(0,300),due:/^\d{4}-\d{2}-\d{2}$/.test(x.due||'')?x.due:''}});const history=Array.isArray(data.history)?data.history.filter(x=>x&&typeof x.date==='string'&&Number.isFinite(x.net)&&Number.isFinite(x.assets)&&Number.isFinite(x.debt)).slice(-200):[];const payments=Array.isArray(data.payments)?data.payments.filter(p=>p&&typeof p.debtName==='string'&&typeof p.sourceName==='string'&&Number.isFinite(p.amount)&&p.amount>0&&typeof p.date==='string').slice(-2000):[];const credit=data.credit&&Number.isFinite(data.credit.total)&&data.credit.total>=0&&data.credit.total<=1e9?{total:cents(data.credit.total)/100,cycle:Number.isInteger(data.credit.cycle)&&data.credit.cycle>=0?data.credit.cycle:0,used:Number.isFinite(data.credit.used)&&data.credit.used>=0?cents(data.credit.used)/100:(data.items.find(x=>x.id===data.credit.debtId&&x.kind==='debt')?.amount||0)}:null;if(data.credit?.debtId){items=items.filter(x=>!(x.id===data.credit.debtId&&x.kind==='debt'&&x.name==='BBVA Crédito'&&x.notes==='Saldo de tarjeta de crédito'))}return {version:1,items,history,payments,credit,transactions:validateTransactions(data.transactions),ledgerStart:typeof data.ledgerStart==='string'?data.ledgerStart:null}}
+function valid(data){if(!data||data.version!==1||!Array.isArray(data.items)||data.items.length>10000)throw Error('Formato de respaldo no válido.');const ids=new Set();let items=data.items.map(x=>{if(!x||typeof x.id!=='string'||ids.has(x.id)||typeof x.name!=='string'||!x.name.trim()||!cats.includes(x.category)||!['asset','debt'].includes(x.kind)||typeof x.amount!=='number'||!Number.isFinite(x.amount)||x.amount<0||x.amount>1e9)throw Error('Hay un registro no válido.');ids.add(x.id);return {id:x.id,name:x.name.slice(0,160),category:x.kind==='asset'&&x.name==='Dinero por cobrar'?'Por cobrar':x.category,kind:x.kind,amount:cents(x.amount)/100,notes:String(x.notes||'').slice(0,400),creditor:String(x.creditor||'').slice(0,160),concept:String(x.concept||'').slice(0,300),due:/^\d{4}-\d{2}-\d{2}$/.test(x.due||'')?x.due:''}});const history=Array.isArray(data.history)?data.history.filter(x=>x&&typeof x.date==='string'&&Number.isFinite(x.net)&&Number.isFinite(x.assets)&&Number.isFinite(x.debt)).slice(-200):[];const payments=Array.isArray(data.payments)?data.payments.filter(p=>p&&typeof p.debtName==='string'&&typeof p.sourceName==='string'&&Number.isFinite(p.amount)&&p.amount>0&&typeof p.date==='string').slice(-2000):[];const credit=data.credit&&Number.isFinite(data.credit.total)&&data.credit.total>=0&&data.credit.total<=1e9?{total:cents(data.credit.total)/100,cycle:Number.isInteger(data.credit.cycle)&&data.credit.cycle>=0?data.credit.cycle:0,used:Number.isFinite(data.credit.used)&&data.credit.used>=0?cents(data.credit.used)/100:(data.items.find(x=>x.id===data.credit.debtId&&x.kind==='debt')?.amount||0)}:null;if(data.credit?.debtId){items=items.filter(x=>!(x.id===data.credit.debtId&&x.kind==='debt'&&x.name==='BBVA Crédito'&&x.notes==='Saldo de tarjeta de crédito'))}return {version:1,items,history,payments,credit,transfers:validateCashTransfers(data.transfers),transactions:validateTransactions(data.transactions),ledgerStart:typeof data.ledgerStart==='string'?data.ledgerStart:null}}
 try{const saved=localStorage.getItem(KEY);if(saved)state=valid(JSON.parse(saved))}catch(e){$('status').textContent='No se pudo cargar el almacenamiento local. Puedes importar un respaldo.'}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state));$('status').textContent='Cambios guardados en este navegador.'}catch(e){$('status').textContent='No se pudo guardar en el navegador. Descarga un respaldo antes de cerrar.'}render();route()}
 function totals(){const sum=fn=>state.items.filter(fn).reduce((s,x)=>s+cents(x.amount),0)/100;const assets=sum(x=>x.kind==='asset'),debt=sum(x=>x.kind==='debt');return {assets,debt,net:(cents(assets)-cents(debt))/100,cash:sum(x=>x.kind==='asset'&&['Dinero','Dinero disponible'].includes(x.category)),receivable:sum(x=>x.kind==='asset'&&(x.category==='Por cobrar'||x.name==='Dinero por cobrar'))}}
@@ -503,4 +506,115 @@ route=function(){
 };
 window.addEventListener('hashchange',route);
 render();route();
+
+// Cash transfers move existing balances between cash and debit accounts.
+function validateCashTransfers(input) {
+  if (input == null) return [];
+  if (!Array.isArray(input)) throw Error('Formato de transferencias no válido.');
+  const ids = new Set();
+  return input.map(entry => {
+    if (!entry || typeof entry.id !== 'string' || ids.has(entry.id)
+        || !['cash', 'bcp', 'bbva'].includes(entry.source)
+        || !['cash', 'bcp', 'bbva'].includes(entry.destination)
+        || (entry.source === 'cash') === (entry.destination === 'cash')
+        || !Number.isFinite(entry.amount) || entry.amount <= 0 || entry.amount > 1e9
+        || !normalizeLedgerDate(entry.date)) {
+      throw Error('Hay una transferencia no válida.');
+    }
+    ids.add(entry.id);
+    return {id:entry.id, source:entry.source, destination:entry.destination,
+      amount:cents(entry.amount)/100, date:entry.date};
+  });
+}
+
+function cashTransferAccountType(item) {
+  if (item.kind !== 'asset' || groupOf(item) !== 'Dinero disponible') return null;
+  const name = item.name.toLowerCase();
+  if (name.includes('efectivo')) return 'cash';
+  if (name.includes('bbva')) return 'bbva';
+  return 'bcp';
+}
+
+function commitCashTransfer(source, destination, amount, date) {
+  const entry = validateCashTransfers([{
+    id:crypto.randomUUID(), source, destination, amount, date
+  }])[0];
+  const next = JSON.parse(JSON.stringify(state));
+  const origins = next.items.filter(item => cashTransferAccountType(item) === source);
+  const available = origins.reduce((sum, item) => sum + cents(item.amount), 0);
+  let remaining = cents(entry.amount);
+  if (remaining > available) throw Error('Saldo insuficiente en la cuenta de origen.');
+  let target = next.items.find(item => cashTransferAccountType(item) === destination);
+  if (!target) {
+    const names = {cash:'Efectivo', bcp:'BCP', bbva:'BBVA'};
+    target = {id:crypto.randomUUID(), name:names[destination], kind:'asset',
+      category:'Dinero disponible', amount:0, notes:''};
+    next.items.push(target);
+  }
+  for (const item of origins) {
+    const debit = Math.min(cents(item.amount), remaining);
+    item.amount = (cents(item.amount) - debit) / 100;
+    remaining -= debit;
+    if (!remaining) break;
+  }
+  target.amount = (cents(target.amount) + cents(entry.amount)) / 100;
+  next.transfers = [...(next.transfers || []), entry];
+  state = valid(next);
+  save();
+}
+
+const cashTransferDialog = document.createElement('dialog');
+cashTransferDialog.id = 'cashTransferDialog';
+cashTransferDialog.innerHTML = '<form id="cashTransferForm"><h2 id="cashTransferTitle"></h2><label id="cashTransferDestinationLabel">Cuenta de destino<select id="cashTransferDestination"><option value="bcp">BCP · Débito</option><option value="bbva">BBVA · Débito</option></select></label><label>Monto (S/)<input id="cashTransferAmount" type="number" min="0.01" max="1000000000" step="0.01" required></label><label>Fecha<input id="cashTransferDate" type="date" min="2000-01-01" max="2200-12-31" required></label><p id="cashTransferError" role="alert" class="small"></p><div class="actions"><button type="button" id="cashTransferCancel">Cancelar</button><button type="submit" class="primary">Confirmar</button></div></form>';
+document.body.append(cashTransferDialog);
+let cashTransferSource = 'cash';
+
+function openCashTransfer(source) {
+  cashTransferSource = source;
+  $('cashTransferForm').reset();
+  $('cashTransferTitle').textContent = source === 'cash'
+    ? 'Depositar efectivo' : 'Retirar de ' + (source === 'bcp' ? 'BCP · Débito' : 'BBVA · Débito');
+  $('cashTransferDestinationLabel').hidden = source !== 'cash';
+  $('cashTransferDate').value = limaExactDate();
+  $('cashTransferError').textContent = '';
+  cashTransferDialog.showModal();
+  $('cashTransferAmount').focus();
+}
+$('cashTransferCancel').onclick = () => cashTransferDialog.close();
+$('cashTransferForm').onsubmit = event => {
+  event.preventDefault();
+  const submit = event.submitter;
+  if (submit) submit.disabled = true;
+  try {
+    const destination = cashTransferSource === 'cash' ? $('cashTransferDestination').value : 'cash';
+    commitCashTransfer(cashTransferSource, destination,
+      Number($('cashTransferAmount').value), $('cashTransferDate').value);
+    cashTransferDialog.close();
+  } catch (error) {
+    $('cashTransferError').textContent = error.message;
+  } finally {
+    if (submit) submit.disabled = false;
+  }
+};
+
+const routeBeforeCashTransfers = route;
+route = function() {
+  routeBeforeCashTransfers();
+  if (location.hash !== '#dinero') return;
+  const cards = document.querySelectorAll('#cashPanel .moneycard');
+  ['cash', 'bcp', 'bbva'].forEach((account, index) => {
+    const card = cards[index];
+    if (!card || card.querySelector('.cashTransferAction')) return;
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'cashTransferAction';
+    button.textContent = account === 'cash' ? 'Depositar' : 'Retirar';
+    button.onclick = () => openCashTransfer(account);
+    card.append(button);
+  });
+};
+window.addEventListener('hashchange', route);
+render();
+route();
+
 </script></body></html>
