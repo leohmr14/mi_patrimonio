@@ -93,6 +93,42 @@ body.homeSummaryActive header p{display:none}
 @media(max-width:900px){.summaryLayout{grid-template-columns:1fr}.summaryCards #homeCards{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 @media(max-width:600px){.summaryCards #homeCards{grid-template-columns:1fr!important}.summaryCards #homeCards .card{height:112px;min-height:112px}#financialOverview .recordMonths{grid-template-columns:1fr}}
 @media(pointer:coarse){.summaryCards .homePrivacy button{position:relative}.summaryCards .homePrivacy button::after{content:"";position:absolute;inset:-8px}}
+
+/* Approved black theme */
+:root{--bg:#000;--panel:#171717;--line:#363636;--text:#f5f5f5;--muted:#aaa}
+html,body,main{background:#000!important;background-image:none!important}
+.sidebar{background:#0a0a0a!important;border-right-color:#292929}
+.sidebar nav a{color:#b5b5b5}
+.sidebar nav a:hover{background:#202020}
+.sidebar nav a.active{background:#242424;border-color:#555;color:#fff}
+.navcaption,.sidefoot.signature,.sidefoot.signature .version{color:#8e8e8e}
+.cloudbar{background:#111!important;border-color:#343434!important}
+.cloudbar #cloudIdentity{color:#ededed!important}
+.cloudbar #cloudStatus{color:#a3a3a3!important}
+#homeCards .card{background:#171717!important;border-color:#3b3b3b!important;box-shadow:none!important;border-radius:12px}
+#homeCards .card:hover{background:#202020!important;border-color:#606060!important;box-shadow:none!important}
+#homeCards .card .value{color:#fafafa}
+#homeCards .card .label{font-weight:500}
+#financialOverview{background:#121212!important;border-color:#343434!important}
+#financialOverview .summaryMetric{border-bottom-color:#303030}
+#financialOverview h3{color:#ababab}
+#financialOverview .metricResult{color:#f1f1f1}
+#financialOverview .metricFilters select{background:#222;color:#dedede;border-color:#404040}
+#financialOverview .comparisonResult{color:#aaa}
+#financialOverview .comparisonResult strong{color:#f5f5f5}
+.cloudbar button,.homePrivacy button{background:#242424!important;border-color:#444!important;color:#eaeaea!important}
+.cloudbar button:hover,.homePrivacy button:hover{background:#333!important;border-color:#666!important}
+header h1{color:#f5f5f5}
+
+#homeCards .card{border-color:var(--accent,#2684ff)!important;box-shadow:0 0 12px color-mix(in srgb,var(--accent,#2684ff) 12%,transparent)!important}#homeCards .card:hover{border-color:var(--accent,#2684ff)!important;box-shadow:0 0 20px color-mix(in srgb,var(--accent,#2684ff) 22%,transparent)!important}
+.box,.moneycard,.creditpanel,.ledgerHero,.ledgerTableBox,.ledgerRegister,.debtentry,.placeholderview,.cloudconflict{background:#171717!important}
+.tablewrap,dialog{background:#171717;border-color:#3b3b3b}
+th,.ledgerTable th{background:#242424!important;color:#bbb}
+input,select,button{background-color:#202020;border-color:#3a3a3a}
+dialog{color:#f5f5f5}
+.cloudbar{background:#111!important;border-color:#343434!important}
+.ledgerHero,.moneycard,.creditpanel{box-shadow:none}
+
 </style></head><body><aside class="sidebar"><a href="#inicio" class="brand">◈ Mi balance</a><p class="navcaption">PANEL FINANCIERO</p><nav aria-label="Secciones"><a href="#inicio" data-route="inicio">⌂ <span>Inicio</span></a><a href="#patrimonio" data-route="patrimonio">◇ <span>Patrimonio Neto</span></a><a href="#dinero" data-route="dinero">◉ <span>Dinero disponible</span></a><a href="#ingresos" data-route="ingresos">↗ <span>Ingresos</span></a><a href="#gastos" data-route="gastos">↘ <span>Gastos</span></a></nav><div class="sidefoot signature"><div>Larrixx</div><span class="version">versión 1.11</span></div></aside><main>
 <section class="cloudbar" aria-label="Cuenta y sincronización"><div><span id="cloudIdentity">Solo en este navegador</span><div id="cloudStatus" role="status" aria-live="polite">Conecta tu cuenta para sincronizar tus registros.</div></div><div class="actions"><button id="cloudLogin" class="primary">Iniciar sesión</button><button id="cloudFirstUpload" hidden>Subir mis registros</button><button id="cloudRefresh" hidden>Sincronizar</button><button id="cloudLogout" hidden>Cerrar sesión</button></div></section><div id="cloudConflict" class="cloudconflict" hidden><p>Hay cambios distintos en este dispositivo y en la nube. Puedes descargar un respaldo antes de elegir.</p><div class="actions"><button id="cloudUseRemote">Cargar versión de la nube</button><button id="cloudUseLocal">Conservar mis cambios locales</button></div></div><header><div><h1>Estado de Situación Financiera</h1><p>Una vista clara de lo que tienes y lo que debes.</p></div></header>
 <div id="status" class="status" role="status" aria-live="polite"></div>
