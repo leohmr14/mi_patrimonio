@@ -58,6 +58,41 @@ table{min-width:460px}.inventory{margin-top:25px;padding-top:24px;border-top:1px
 
 .moneycard .cashTransferAction{display:flex;align-items:center;justify-content:center;width:128px;height:38px;padding:0 10px;margin:18px auto 0;font-size:13px;line-height:1;border-radius:8px}
 #cashTransferDialog .actions{justify-content:flex-end}
+
+body.homeSummaryActive .cloudbar{gap:10px;padding:9px 13px;margin-bottom:20px;border-radius:10px}
+body.homeSummaryActive .cloudbar #cloudIdentity{font-size:12px}
+body.homeSummaryActive .cloudbar #cloudStatus{font-size:10px;margin-top:2px;line-height:1.35}
+body.homeSummaryActive .cloudbar .actions{gap:6px}
+body.homeSummaryActive .cloudbar .actions button{font-size:11px;padding:7px 10px;border-radius:7px}
+body.homeSummaryActive header h1{margin:0;font-size:clamp(27px,3vw,38px)}
+body.homeSummaryActive header p{display:none}
+.summaryLayout{display:grid;grid-template-columns:minmax(290px,1fr) minmax(400px,1.5fr);gap:20px;align-items:start;margin-top:40px}
+.summaryCards{position:relative;min-width:0}
+.summaryCards .homePrivacy{position:absolute;top:-34px;left:0;right:auto;margin:0}
+.summaryCards .homePrivacy button{width:27px;height:27px;padding:5px;border-radius:6px;align-items:center;justify-content:center}
+.summaryCards .homePrivacy svg{width:15px;height:15px}
+.summaryCards #homeCards{grid-template-columns:1fr!important;grid-auto-rows:1fr;margin:0;height:auto;gap:12px}
+.summaryCards #homeCards .card{height:120px;min-height:120px;padding:18px 20px;grid-template-columns:minmax(0,1fr) 60px;column-gap:14px;row-gap:8px}
+.summaryCards #homeCards .card .label{font-size:14px;font-weight:500;line-height:1.3}
+.summaryCards #homeCards .card .value{font-size:29px!important;font-weight:700;line-height:1.15;letter-spacing:-1.2px;white-space:nowrap}
+.summaryCards #homeCards .card .cardicon{width:60px!important;height:60px!important}
+#financialOverview{border:1px solid #28313f;border-radius:14px;padding:6px 22px;background:#111720;min-width:0}
+#financialOverview .summaryMetric{padding:13px 0;border-bottom:1px solid #28313f}
+#financialOverview .metricHeading{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+#financialOverview h3{font-size:14px;font-weight:500;color:#a9bbd1;margin:0;line-height:1.4}
+#financialOverview .metricFilters{display:flex;gap:5px;flex-wrap:wrap}
+#financialOverview .metricFilters select{font-size:11px;padding:5px 7px;border-radius:6px;min-height:30px}
+#financialOverview .metricResult{margin-top:7px;font-size:18px;font-weight:600;color:#edf3fb;line-height:1.35;overflow-wrap:anywhere}
+#financialOverview #result-status[data-status="positive"]{color:#39df96}
+#financialOverview #result-status[data-status="negative"]{color:#ff8292}
+#financialOverview .comparisonResult{display:flex;gap:24px;flex-wrap:wrap;margin-top:11px;color:#a9bbd1;font-size:13px}
+#financialOverview .comparisonResult strong{color:#edf3fb;font-weight:500;margin-left:7px}
+#financialOverview .recordMonths{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:15px 0}
+#financialOverview .recordMonths .metricResult{font-size:15px}
+@media(max-width:1200px){.summaryLayout{grid-template-columns:minmax(275px,1fr) minmax(340px,1.3fr);gap:16px}#financialOverview{padding:5px 16px}#financialOverview .metricFilters{width:100%}}
+@media(max-width:900px){.summaryLayout{grid-template-columns:1fr}.summaryCards #homeCards{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:600px){.summaryCards #homeCards{grid-template-columns:1fr!important}.summaryCards #homeCards .card{height:112px;min-height:112px}#financialOverview .recordMonths{grid-template-columns:1fr}}
+@media(pointer:coarse){.summaryCards .homePrivacy button{position:relative}.summaryCards .homePrivacy button::after{content:"";position:absolute;inset:-8px}}
 </style></head><body><aside class="sidebar"><a href="#inicio" class="brand">◈ Mi balance</a><p class="navcaption">PANEL FINANCIERO</p><nav aria-label="Secciones"><a href="#inicio" data-route="inicio">⌂ <span>Inicio</span></a><a href="#patrimonio" data-route="patrimonio">◇ <span>Patrimonio Neto</span></a><a href="#dinero" data-route="dinero">◉ <span>Dinero disponible</span></a><a href="#ingresos" data-route="ingresos">↗ <span>Ingresos</span></a><a href="#gastos" data-route="gastos">↘ <span>Gastos</span></a></nav><div class="sidefoot signature"><div>Larrixx</div><span class="version">versión 1.11</span></div></aside><main>
 <section class="cloudbar" aria-label="Cuenta y sincronización"><div><span id="cloudIdentity">Solo en este navegador</span><div id="cloudStatus" role="status" aria-live="polite">Conecta tu cuenta para sincronizar tus registros.</div></div><div class="actions"><button id="cloudLogin" class="primary">Iniciar sesión</button><button id="cloudFirstUpload" hidden>Subir mis registros</button><button id="cloudRefresh" hidden>Sincronizar</button><button id="cloudLogout" hidden>Cerrar sesión</button></div></section><div id="cloudConflict" class="cloudconflict" hidden><p>Hay cambios distintos en este dispositivo y en la nube. Puedes descargar un respaldo antes de elegir.</p><div class="actions"><button id="cloudUseRemote">Cargar versión de la nube</button><button id="cloudUseLocal">Conservar mis cambios locales</button></div></div><header><div><h1>Estado de Situación Financiera</h1><p>Una vista clara de lo que tienes y lo que debes.</p></div></header>
 <div id="status" class="status" role="status" aria-live="polite"></div>
@@ -616,5 +651,140 @@ route = function() {
 window.addEventListener('hashchange', route);
 render();
 route();
+
+
+// Home overview uses recorded income and expense transactions.
+function calculateHomeSummary(transactions, scope, year, month) {
+  const rows = transactions.filter(tx => scope === 'all'
+    || tx.year === year && (scope === 'year' || tx.month === month));
+  const incomes = rows.filter(tx => tx.type === 'income');
+  const expenses = rows.filter(tx => tx.type === 'expense');
+  const total = entries => entries.reduce((sum, tx) => sum + cents(tx.amount), 0);
+  const income = total(incomes), expense = total(expenses);
+  function leaders(entries, frequency) {
+    const groups = new Map();
+    for (const tx of entries) groups.set(tx.group,
+      (groups.get(tx.group) || 0) + (frequency ? 1 : cents(tx.amount)));
+    if (!groups.size) return 'Sin registros';
+    const maximum = Math.max(...groups.values());
+    return [...groups].filter(entry => entry[1] === maximum).map(entry => entry[0])
+      .sort((a,b) => a.localeCompare(b,'es')).join(' · ');
+  }
+  return {
+    status:rows.length ? income > expense ? 'Superávit' : income < expense ? 'Déficit' : 'Equilibrio' : 'Sin registros',
+    spent:income ? (expense / income * 100).toLocaleString('es-PE',{maximumFractionDigits:1})+' %' : 'Sin ingresos',
+    expense:leaders(expenses,true),
+    income:leaders(incomes,false)
+  };
+}
+function homeMonthlyLeaders(transactions,type) {
+  const totals = new Map();
+  for (const tx of transactions) {
+    if (tx.type !== type) continue;
+    const key = tx.year+'-'+String(tx.month).padStart(2,'0');
+    totals.set(key,(totals.get(key)||0)+cents(tx.amount));
+  }
+  if (!totals.size) return 'Sin registros';
+  const maximum = Math.max(...totals.values());
+  return [...totals].filter(entry=>entry[1]===maximum).sort().map(([key])=>{
+    const [year,month]=key.split('-').map(Number);
+    return ledgerMonths[month-1]+' de '+year;
+  }).join(' · ');
+}
+function homeMonthComparison(transactions,type,year,month) {
+  const previousMonth=month===1?12:month-1;
+  const previousYear=month===1?year-1:year;
+  const current=transactions.filter(tx=>tx.type===type&&tx.year===year&&tx.month===month);
+  const previous=transactions.filter(tx=>tx.type===type&&tx.year===previousYear&&tx.month===previousMonth);
+  if (!current.length || !previous.length) return 'Sin datos comparables';
+  const sum=rows=>rows.reduce((total,tx)=>total+cents(tx.amount),0);
+  const baseline=sum(previous);
+  if(!baseline)return 'Sin datos comparables';
+  const change=(sum(current)-baseline)/baseline*100;
+  if(change===0)return 'Sin variación';
+  return (change>0?'↑ ':'↓ ')+Math.abs(change).toLocaleString('es-PE',{maximumFractionDigits:1})+' %';
+}
+
+const overviewLayout=document.createElement('div');
+overviewLayout.id='homeOverviewLayout';
+overviewLayout.className='summaryLayout';
+$('homePrivacy').before(overviewLayout);
+const overviewCards=document.createElement('div');
+overviewCards.className='summaryCards';
+overviewLayout.append(overviewCards);
+overviewCards.append($('homePrivacy'),$('homeCards'));
+overviewLayout.insertAdjacentHTML('beforeend',"<section id=\"financialOverview\" aria-label=\"Indicadores financieros\"><div class=\"summaryMetric\"><div class=\"metricHeading\"><h3>Estado actual</h3><div class=\"metricFilters\" data-filter=\"status\"><select aria-label=\"Período de status\" data-scope><option value=\"month\">Mes</option><option value=\"year\">Año</option><option value=\"all\">General</option></select><select aria-label=\"Mes de status\" data-month></select><select aria-label=\"Año de status\" data-year></select></div></div><div class=\"metricResult\" id=\"result-status\" aria-live=\"polite\">Superávit</div></div><div class=\"summaryMetric\"><div class=\"metricHeading\"><h3>Porcentaje de ingresos gastado</h3><div class=\"metricFilters\" data-filter=\"spent\"><select aria-label=\"Período de spent\" data-scope><option value=\"month\">Mes</option><option value=\"year\">Año</option><option value=\"all\">General</option></select><select aria-label=\"Mes de spent\" data-month></select><select aria-label=\"Año de spent\" data-year></select></div></div><div class=\"metricResult\" id=\"result-spent\" aria-live=\"polite\">89.1 %</div></div><div class=\"summaryMetric\"><div class=\"metricHeading\"><h3>Comparación con el mes anterior</h3><div class=\"metricFilters\"><select id=\"comparisonMonth\" aria-label=\"Mes de comparación\"></select><select id=\"comparisonYear\" aria-label=\"Año de comparación\"></select></div></div><div class=\"comparisonResult\" id=\"comparisonResult\" aria-live=\"polite\"><span>Ingresos <strong>↑ 18.0 %</strong></span><span>Gastos <strong>↑ 10.6 %</strong></span></div></div><div class=\"summaryMetric\"><div class=\"metricHeading\"><h3>Gasto más recurrente</h3><div class=\"metricFilters\" data-filter=\"expense\"><select aria-label=\"Período de expense\" data-scope><option value=\"month\">Mes</option><option value=\"year\">Año</option><option value=\"all\">General</option></select><select aria-label=\"Mes de expense\" data-month></select><select aria-label=\"Año de expense\" data-year></select></div></div><div class=\"metricResult\" id=\"result-expense\" aria-live=\"polite\">Pasajes</div></div><div class=\"summaryMetric\"><div class=\"metricHeading\"><h3>Principal fuente de ingresos</h3><div class=\"metricFilters\" data-filter=\"income\"><select aria-label=\"Período de income\" data-scope><option value=\"month\">Mes</option><option value=\"year\">Año</option><option value=\"all\">General</option></select><select aria-label=\"Mes de income\" data-month></select><select aria-label=\"Año de income\" data-year></select></div></div><div class=\"metricResult\" id=\"result-income\" aria-live=\"polite\">Jim</div></div><div class=\"recordMonths\"><div><h3>Mes con mayores ingresos</h3><div class=\"metricResult\">Noviembre de 2026</div></div><div><h3>Mes con mayores gastos</h3><div class=\"metricResult\">Octubre de 2026</div></div></div></section>");
+const overviewPanel=$('financialOverview');
+const todayOverview=limaToday();
+const overviewFilters={};
+overviewPanel.querySelectorAll('[data-filter]').forEach(group=>{
+  overviewFilters[group.dataset.filter]={scope:'month',year:todayOverview.year,month:todayOverview.month};
+  group.addEventListener('change',()=>{
+    overviewFilters[group.dataset.filter]={
+      scope:group.querySelector('[data-scope]').value,
+      year:Number(group.querySelector('[data-year]').value),
+      month:Number(group.querySelector('[data-month]').value)
+    };
+    drawHomeOverview();
+  });
+});
+let overviewComparison={year:todayOverview.year,month:todayOverview.month};
+$('comparisonMonth').onchange=$('comparisonYear').onchange=()=>{
+  overviewComparison={year:Number($('comparisonYear').value),month:Number($('comparisonMonth').value)};
+  drawHomeOverview();
+};
+function fillOverviewDates(monthSelect,yearSelect,selection,years) {
+  monthSelect.innerHTML=ledgerMonths.map((name,index)=>'<option value="'+(index+1)+'">'+name+'</option>').join('');
+  yearSelect.innerHTML=years.map(year=>'<option value="'+year+'">'+year+'</option>').join('');
+  monthSelect.value=String(selection.month);
+  yearSelect.value=String(selection.year);
+}
+function drawHomeOverview() {
+  const transactions=state.transactions||[];
+  const years=[...new Set([todayOverview.year,...transactions.map(tx=>tx.year),
+    ...Object.values(overviewFilters).map(selection=>selection.year),overviewComparison.year])].sort((a,b)=>b-a);
+  for(const group of overviewPanel.querySelectorAll('[data-filter]')) {
+    const key=group.dataset.filter,selection=overviewFilters[key];
+    const scope=group.querySelector('[data-scope]'),month=group.querySelector('[data-month]'),year=group.querySelector('[data-year]');
+    fillOverviewDates(month,year,selection,years);
+    scope.value=selection.scope;
+    month.hidden=selection.scope!=='month';
+    year.hidden=selection.scope==='all';
+    const result=$('result-'+key);
+    const data=calculateHomeSummary(transactions,selection.scope,selection.year,selection.month);
+    result.textContent=balancesHidden?'••••••':data[key];
+    if(key==='status')result.dataset.status=balancesHidden?'neutral':data.status==='Superávit'?'positive':data.status==='Déficit'?'negative':'neutral';
+  }
+  fillOverviewDates($('comparisonMonth'),$('comparisonYear'),overviewComparison,years);
+  const comparison=$('comparisonResult');
+  comparison.replaceChildren();
+  for(const [type,label] of [['income','Ingresos'],['expense','Gastos']]){
+    const span=document.createElement('span'),strong=document.createElement('strong');
+    span.append(label+' ');
+    strong.textContent=balancesHidden?'••••••':homeMonthComparison(transactions,type,overviewComparison.year,overviewComparison.month);
+    span.append(strong);comparison.append(span);
+  }
+  const recordResults=overviewPanel.querySelectorAll('.recordMonths .metricResult');
+  recordResults[0].textContent=balancesHidden?'••••••':homeMonthlyLeaders(transactions,'income');
+  recordResults[1].textContent=balancesHidden?'••••••':homeMonthlyLeaders(transactions,'expense');
+}
+const renderBeforeHomeOverview=render;
+render=function(){renderBeforeHomeOverview();drawHomeOverview()};
+const routeBeforeHomeOverview=route;
+route=function(){
+  routeBeforeHomeOverview();
+  const home=!location.hash||location.hash==='#inicio';
+  document.body.classList.toggle('homeSummaryActive',home);
+  overviewLayout.hidden=!home;
+  if(home){
+    document.querySelector('header h1').textContent='Resumen financiero';
+    document.title='Resumen financiero · Mi balance';
+  }
+  drawHomeOverview();
+};
+const privacyBeforeHomeOverview=applyBalanceVisibility;
+applyBalanceVisibility=function(){privacyBeforeHomeOverview();drawHomeOverview()};
+window.addEventListener('hashchange',route);
+render();route();
 
 </script></body></html>
